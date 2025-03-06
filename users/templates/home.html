@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container col-xxl-8">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-4 text-end">
+            <a href="/update_user/" class="btn btn-primary">
+                <img src="../static/img/pencil-square.svg">
+            </a>
+        </div>
+        <div class="col-lg-8">
+            <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">
+                Welcome
+                {% if user.is_staff %}
+                admin
+                {% else %}
+                {{player.username}}
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% if user.is_staff %}
+    <div class="row">
+        <h2 class="col-12 col-lg-3">Create a Tournamet</h2>
+        <a href="/create_tournament" class="btn btn-primary">Create</a>
+    </div>
+
+    <div class="container my-2">
+        <h2 class="display-5 text-center">Active Tournaments</h2>
+        <div class="row">
+            {% for tournament in tournaments %}
+                {% if tournament.status != 2 %}
+                <div class="card col-12 col-md-3 m-2">
+                    <div class="card-body">
+                        <h5 class="card-title">{{tournament.name}}</h5>
+                        <p class="card-text">{{tournament.description}}</p>
+                        <div class="card-body">
+                            <p class="card-text">Game: {{tournament.game.name}}</p>
+                            <p class="card-text">Players: {{tournament.players}}/{{tournament.max_players}}</p>
+                            <p class="card-text">Date: {{ tournament.date }} </p>
+
+                        </div>
+                        <div class="row justify-content-between">
+                            <form class="col-5" action="/play/" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="tournament_id" value='{{tournament.id}}'>
+                                <button type="submit" class="btn btn-outline-primary col-12">Start</button>
+                            </form>
+                            <form class="col-5" action="/delete_tournament/" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="tournament_id" value='{{tournament.id}}'>
+                                <button type="submit" class="btn btn-outline-danger col-12">Delete</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <h2 class="display-5">Your Stats</h2>
+    <div class="row">
+        <div class="col-12 col-md-6 card-body">
+            <table class="table text-center">
+                <thead>
+                    <tr>
+                        <th colspan="5" class="display-6" scope="col">Games</th>
+                    </tr>
+                    <tr>
+                        <th>Played</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                        <th>Draws</th>
+                        <th>Win Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{player.games_played}}</td>
+                        <td>{{player.games_wins}}</td>
+                        <td>{{player.games_loses}}</td>
+                        <td>{{player.games_draws}}</td>
+                        <td>{{player.winrate}} %</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6 card-body">
+            <table class="table text-center">
+                <thead>
+                    <tr>
+                        <th colspan="2" class="display-6" scope="col">Tournamets</th>
+                    </tr>
+                    <tr>
+                        <th>Played</th>
+                        <th>Wins</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{player.tournament_played}}</td>
+                        <td>{{player.tournament_wins}}</td>
+                    </tr>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Crear una zona para ver la información del torneo que se ha inscrito -->
+{% if user.is_staff %}
+{% else %}
+<div class="container ">
+    <h2 class="display-5 text-center">Next Tournament</h2>
+    {% if player.tournament != 0 %}
+    <div class="card col-8 mx-auto">
+        <div class="card-body">
+            <h5 class="card-title text-center">{{tournament.name}}</h5>
+            <p class="card-text">{{tournament.description}}</p>
+            <p class="card-text">Start Date: {{tournament.date}}</p>
+            <p class="card-text">Rounds: {{tournament.rounds}}</p>
+            <p class="card-text">Level: {{tournament.min_level.name}}</p>
+            <p class="card-text">Game: {{tournament.game.name}}</p>
+        </div>
+        {% if tournament.status == 1 %}
+            <form class="col-12" action="/play/" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="tournament_id" value='{{tournament.id}}'>
+                <button type="submit" class="btn btn-outline-primary col-12">Join</button>
+            </form>
+        {% endif %}
+    </div>
+    {% else %}
+    <h3 class="display-6 text-center">You are not registered in any tournament</h3>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Crear una zona para ver el registro de las ultimas partidas -->
+{% if user.is_staff %}
+{% else %}
+<div class="container m-2 mx-auto">
+    <h2 class="display-5 text-center">Last Games Played</h2>
+    {% for game in games %}
+    <div class="card col-12 mx-auto p-0 my-2">
+        <div class="card col-12 text-center p-2">
+            <h5 class="card-title">Tournament: {{game.tournament.name}} // Round: {{game.round}}</h5>
+        </div>
+        <div class="row col-12 mx-auto">
+            <div class="card col-6 p-2 py-2">
+                <div class="row">
+                    <h5 class="card-title text-start pl-5 col-10 px-5">{{game.player1.username}}</h5>
+                    <h5 class="card-title text-end col-2 px-3">{{game.result_player1}}</h5>
+                </div>
+            </div>
+            <div class="card col-6 p-2 py-2">
+                <div class="row">
+                    <h5 class="card-title text-start col-2 px-3">{{game.result_player2}}</h5>
+                    <h5 class="card-title text-end pl-5 col-10 px-5">{{game.player2.username}}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card col-12 p-2 text-center">
+            {% if game.winner == player %}
+            <h5 class="card-title text-success">Win</h5>
+            {% elif game.winner == draw_case %}
+            <h5 class="card-title text-warning">Draw</h5>
+            {% else %}
+            <h5 class="card-title text-danger">Lose</h5>
+            {% endif %}
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container col-xxl-8 ">
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div class="col-lg-12">
+                <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Active Tournaments</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container row">
+        {% if tournaments|length == 0 %}
+            <div class="container col-12">
+                <h2 class="display-5">There are any active tournaments at this moment</h2>
+            </div>
+        {% endif %}
+        <!-- Nos muestra los torneos que no tienen un ganador y filtrar segun el nivel-->
+        {% for tournament in tournaments %}
+            {% if tournament.winner.name == no_winner and tournament.status != 2  %}
+                <div class="card col-12 col-md-3 m-2">
+                    <div class="card-body">
+                        <h5 class="card-title">{{tournament.name}}</h5>
+                        <p class="card-text">{{tournament.description}}</p>
+                        <div class="card-body">
+                            <p class="card-text">Game: {{tournament.game}}</p>
+                            <p class="card-text">Starts: {{tournament.date}}</p>
+                            <p class="card-text">Players: {{tournament.players}}/{{tournament.max_players}}</p>
+                            <div class="row justify-content-between">
+                                <form class="col-5" action="/join_tournament/" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="tournament_id" value='{{tournament.id}}'>
+                                    {% if player.tournament == tournament.id %}
+                                        <button type="submit" class="btn btn-secondary disabled col-12">Joined</button>
+                                    {% else %}
+                                        {% if tournament.players == tournament.max_players %}
+                                            <button type="submit" class="btn btn-secondary disabled  col-12">Full</button>
+                                        {% else %}
+                                            <button type="submit" class="btn btn-primary  col-12">Join</button>
+                                        {% endif %}
+                                    {% endif %}
+                                </form>
+                                {% if player.tournament == tournament.id %}
+                                    <form class="col-5" action="/leave_tournament/" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="tournament_id" value='{{tournament.id}}'>
+                                        <button type="submit" class="btn btn-danger col-12">Leave</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}	
+        {% endfor %}
+    </div>
+
+{% endblock %}

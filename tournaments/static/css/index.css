@@ -1,0 +1,11 @@
+.intro{
+    margin-top: 100px;
+}
+.bd-placeholder-img{
+    width: 100%;
+    filter: blur(5px);
+}
+.carousel{
+    width: 60%;
+    margin: auto;
+}

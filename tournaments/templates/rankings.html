@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container col-xxl-8 ">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-lg-12">
+            <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Rankings</h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-4 text-center">
+            <h4>Top Tournament wins</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Wins</th>
+                    </tr>
+                    {% for player in pt %}
+                        {% if player.username != "no_winner" %}
+                            <tr>
+                                <td>{{player.username}}</td>    
+                                <td>{{player.tournament_wins}}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </thead>
+            </table>
+        </div>
+        <div class="col-12 col-md-4 text-center">
+            <h4>Games Winrate</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Winrate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in pw %}
+                        {% if player.username != "no_winner" %}
+                            <tr>
+                                <td>{{player.username}}</td>    
+                                <td>{{player.winrate}} %</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 col-md-4 text-center">
+            <h4>More Participations</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Participations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in pp %}
+                        {% if player.username != "no_winner" %}
+                            <tr>
+                                <td>{{player.username}}</td>    
+                                <td>{{player.tournament_played}}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
