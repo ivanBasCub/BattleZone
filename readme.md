@@ -1,4 +1,4 @@
-# Battle Zone - TFG Tokyo School
+# Battle Zone - TFG
 ## Descripción del proyecto
 Consiste en una app web que crea y gestiona torneos de videojuegos. La capacidad de participantes de cada torneo son desde 4 participantes hasta los 32 participantes. Se pueden jugar un máximo de 5 rondas. Los torneos que se basan en estilo liga el que tenga más puntos gana. Los puntos que recibes son los siguientes:
 
