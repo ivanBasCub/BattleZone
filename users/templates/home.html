@@ -4,18 +4,13 @@
 
 <div class="container col-xxl-8">
     <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-        <div class="col-4 text-end">
-            <a href="/update_user/" class="btn btn-primary">
-                <img src="../static/img/pencil-square.svg">
-            </a>
-        </div>
-        <div class="col-lg-8">
+        <div class="col-12 col-md-8">
             <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">
                 Welcome
                 {% if user.is_staff %}
-                admin
+                    admin
                 {% else %}
-                {{player.username}}
+                    {{player.username}}
                 {% endif %}
             </h1>
         </div>
@@ -119,7 +114,7 @@
 <div class="container ">
     <h2 class="display-5 text-center">Next Tournament</h2>
     {% if player.tournament != 0 %}
-    <div class="card col-8 mx-auto">
+    <div class="card col-12 col-md-8 mx-auto">
         <div class="card-body">
             <h5 class="card-title text-center">{{tournament.name}}</h5>
             <p class="card-text">{{tournament.description}}</p>
@@ -155,14 +150,14 @@
         <div class="row col-12 mx-auto">
             <div class="card col-6 p-2 py-2">
                 <div class="row">
-                    <h5 class="card-title text-start pl-5 col-10 px-5">{{game.player1.username}}</h5>
-                    <h5 class="card-title text-end col-2 px-3">{{game.result_player1}}</h5>
+                    <h5 class="card-title text-start col-10">{{game.player1.username}}</h5>
+                    <h5 class="card-title text-end col-2">{{game.result_player1}}</h5>
                 </div>
             </div>
             <div class="card col-6 p-2 py-2">
                 <div class="row">
-                    <h5 class="card-title text-start col-2 px-3">{{game.result_player2}}</h5>
-                    <h5 class="card-title text-end pl-5 col-10 px-5">{{game.player2.username}}</h5>
+                    <h5 class="card-title col-2">{{game.result_player2}}</h5>
+                    <h5 class="card-title text-end col-10">{{game.player2.username}}</h5>
                 </div>
             </div>
         </div>

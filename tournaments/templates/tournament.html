@@ -10,7 +10,7 @@
         </div>
     </div>
 </div>
-<div class="container col-6">
+<div class="container col-12 col-md-6">
     <h2 class="display-6 text-center">LeaderBoard</h2>
     <table class="table table-hover table-striped text-center">
         <thead>
@@ -37,79 +37,81 @@
         <h2 class="display-6 text-center">List Games</h2>
         <div class="card col-12 mx-auto p-0 my-2">
             {% if tournament.round >= tournament.rounds %}
-                <h5 class="card-title text-center p-2">Final Round</h5>
-                <form class="d-flex justify-content-center py-1" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
-                    <input type="hidden" name="final" value="final">
-                    {% if list_players.0.points != list_players.1.points %}
-                    <button class="btn btn-outline-danger">Finish Tournament</button>
-                    {% else %}
-                    <button class="btn btn-outline-success">Extra Round</button>
-                    {% endif %}
-                </form>
+            <h5 class="card-title text-center p-2">Final Round</h5>
+            <form class="d-flex justify-content-center py-1" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
+                <input type="hidden" name="final" value="final">
+                {% if list_players.0.points != list_players.1.points %}
+                <button class="btn btn-outline-danger">Finish Tournament</button>
+                {% else %}
+                <button class="btn btn-outline-success">Extra Round</button>
+                {% endif %}
+            </form>
             {% else %}
-                <h5 class="card-title text-center">Round: {{ tournament.round }}</h5>
-                <form class="d-flex justify-content-center" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="create" value="create">
-                    <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
-                    {% if tournament.round != 0 %}
-                    <button class="btn btn-outline-success">Next Round</button>
-                    {% else %}
-                    <button class="btn btn-outline-success">Create the Games</button>
-                    {% endif %}
-                </form>
+            <h5 class="card-title text-center">Round: {{ tournament.round }}</h5>
+            <form class="d-flex justify-content-center" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="create" value="create">
+                <input type="hidden" name="tournament_id" value="{{ tournament.id }}">
+                {% if tournament.round != 0 %}
+                <button class="btn btn-outline-success">Next Round</button>
+                {% else %}
+                <button class="btn btn-outline-success">Create the Games</button>
+                {% endif %}
+            </form>
             {% endif %}
-            
-            
+
+
         </div>
         {% if list_games != "" %}
         <div class="row">
             <div class="container">
                 {% for game in list_games %}
-                <div class="row col-12 mx-auto">
+                <div class="row col-12 mx-auto my-2">
                     <div class="card col-6 p-2 py-2">
                         <div class="row">
-                            <h5 class="card-title text-start pl-5 col-10 px-5">{{game.player1.username}}</h5>
-                            <h5 class="card-title text-end col-2 px-3">{{game.result_player1}}</h5>
+                            <h5 class="card-title text-start col-10">{{game.player1.username}}</h5>
+                            <h5 class="card-title text-end col-2">{{game.result_player1}}</h5>
                         </div>
                     </div>
                     <div class="card col-6 p-2 py-2">
                         <div class="row">
-                            <h5 class="card-title text-start col-2 px-3">{{game.result_player2}}</h5>
-                            <h5 class="card-title text-end pl-5 col-10 px-5">{{game.player2.username}}</h5>
+                            <h5 class="card-title col-2">{{game.result_player2}}</h5>
+                            <h5 class="card-title text-end col-10">{{game.player2.username}}</h5>
                         </div>
                     </div>
                 </div>
                 <div class="row col-12 mx-auto">
+                    {% if game.status == 0 %}
                     <div class="card col-12 p-2 py-2">
                         <h5 class="card-title text-center">Reports:</h5>
                         <div class="card row col-12 mx-auto">
                             {% for report in list_games_aux %}
                                 {% if report.player_sender.username == game.player1.username or report.player_sender.username == game.player2.username %}
-                                <div class="card col-12 mx-auto my-1">
-                                    <div class="row">
-                                        <h5 class="card-title text-center">{{ report.player_sender.username }}</h5>
-                                    </div>
-                                    <div class="row">
-                                        <div class="card col-6 p-2 py-2">
-                                            <div class="row">
-                                                <h5 class="card-title text-start pl-5 col-10 px-5">{{ report.player1.username }}</h5>
-                                                <h5 class="card-title text-end col-2 px-3">{{ report.result_player1 }}</h5>
-                                            </div>
+                            <div class="card col-12 mx-auto my-1">
+                                <div class="row">
+                                    <h5 class="card-title text-center">{{ report.player_sender.username }}</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="card col-6 p-2 py-2">
+                                        <div class="row">
+                                            <h5 class="card-title text-start col-10">{{report.player1.username}}</h5>
+                                            <h5 class="card-title text-end col-2">{{report.result_player1}}</h5>
                                         </div>
-                                        <div class="card col-6 p-2 py-2 ">
-                                            <div class="row">
-                                                <h5 class="card-title text-start col-2 px-3">{{ report.result_player2 }}</h5>
-                                                <h5 class="card-title text-end pl-5 col-10 px-5">{{ report.player2.username }}</h5>
-                                            </div>
+                                    </div>
+                                    <div class="card col-6 p-2 py-2">
+                                        <div class="row">
+                                            <h5 class="card-title col-2">{{report.result_player2}}</h5>
+                                            <h5 class="card-title text-end col-10">{{report.player2.username}}</h5>
                                         </div>
                                     </div>
                                 </div>
-                                {% endif %}
+                            </div>
+                            {% endif %}
                             {% endfor %}
                         </div>
+
                         <div class="row py-2">
                             <form method="post">
                                 <h5 class="card-title text-center">Final Result</h5>
@@ -123,17 +125,20 @@
                                 <div class="row">
                                     <div class="col-6 justify-content-center">
                                         <h5 class="card-title text-center">{{game.player1.username}}</h5>
-                                        <input  type="number" name="result_player1" class="form-control" placeholder="0" required>
+                                        <input type="number" name="result_player1" class="form-control" placeholder="0"
+                                            required>
                                     </div>
                                     <div class="col-6 justify-content-center">
                                         <h5 class="card-title text-center">{{game.player2.username}}</h5>
-                                        <input type="number" name="result_player2" class="form-control" placeholder="0" required>
+                                        <input type="number" name="result_player2" class="form-control" placeholder="0"
+                                            required>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-outline-success col-12">Save Results</button>
                             </form>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -151,14 +156,14 @@
             <div class="row col-12 mx-auto">
                 <div class="card col-6 p-2 py-2">
                     <div class="row">
-                        <h5 class="card-title text-start pl-5 col-10 px-5">{{game.player1.username}}</h5>
-                        <h5 class="card-title text-end col-2 px-3">{{game.result_player1}}</h5>
+                        <h5 class="card-title text-start col-10">{{game.player1.username}}</h5>
+                        <h5 class="card-title text-end col-2">{{game.result_player1}}</h5>
                     </div>
                 </div>
                 <div class="card col-6 p-2 py-2">
                     <div class="row">
-                        <h5 class="card-title text-start col-2 px-3">{{game.result_player2}}</h5>
-                        <h5 class="card-title text-end pl-5 col-10 px-5">{{game.player2.username}}</h5>
+                        <h5 class="card-title col-2">{{game.result_player2}}</h5>
+                        <h5 class="card-title text-end col-10">{{game.player2.username}}</h5>
                     </div>
                 </div>
                 <div class="col-12 p-2 py-2">
