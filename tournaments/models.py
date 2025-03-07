@@ -35,7 +35,7 @@ class Game(models.Model):
     status = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Game {self.id} - {self.tournament.name} - {self.round} - {self.player1.username} vs {self.player2.username}"  
+        return f"Game {self.id} - {self.tournament.name} - Round: {self.round} - {self.player1.username} vs {self.player2.username}"  
 
 # Tablas auxiliares para los torneos
 # Tabla que recogera de manera temporal la informacion de los jugadores que participen en torneos

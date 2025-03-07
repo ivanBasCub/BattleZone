@@ -72,14 +72,14 @@ def home(request):
             else:
                 tournament = None
                     
-            # games = Game.objects.filter(player1=player.id) | Game.objects.filter(player2=player.id)
-            # games = games.order_by('-date')[:5]
+            games = Game.objects.filter(player1=player.id) | Game.objects.filter(player2=player.id)
+            games = games.order_by('-date')[:5]
             videogames = VideoGame.objects.all()
 
             return render(request, 'home.html',{
                 'player': player,
                 'tournament': tournament,
-                #'games': games,
+                'games': games,
                 'videogames': videogames,
                 'draw_case' : draw_case
             })

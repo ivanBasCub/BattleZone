@@ -120,43 +120,37 @@ def playMatch(request):
         if request.user.is_staff:
             # En el caso de que el torneo no haya empezado
             if t.status == 0:
-                # Cambiamos el estado del torneo
-                t.status = 1
-                t.save()
-                
-                # Obtenemos los jugadores que participan en el torneo
-                list_players = Players.objects.filter(tournament = t.id)
+                startTournament(t)
 
-                # Los guardamos en una tabla temporal
-                for player in list_players:
-                    pt = PlayersTournament.objects.create(tournament = t, player = player)
-                    pt.save()
-            
-            # Obtenemos la lista de los jugadores y los ordenamos segun los puntos que tengan
+            # Obtenemos todos los datos necesarios para que la página pueda funcionar 
+                # Obtenemos la lista de los jugadores y los ordenamos segun los puntos que tengan
             players = PlayersTournament.objects.filter(tournament = t).order_by("-points")
-            
-            # Preguntamos si han dado al boton de crear los partidos 
-            if request.POST.get("create") == "create" and t.round < t.rounds:
-                # Creamos los partidos
-                createMatchs(request, players)
-
-            # Recogemos la lista de los juegos de la ronda que toca jugar
+                # Recogemos la lista de los juegos de la ronda que toca jugar
             list_games = Game.objects.filter(tournament = t, round = t.round)
-            # Recogemos la lista de los juegos que han sido enviados por los jugadores
+                # Recogemos la lista de los juegos que han sido enviados por los jugadores
             list_games_aux = GameAux.objects.filter(tournament = t, round = t.round)
+
             
+            # Comprobamos que las listas no esten vacias y si es el caso se le indica su valor como None
             if len(list_games_aux) == 0:
                 list_games_aux = None
-
-            # En el caso de que no haya partidos en la ronda
+            
             if len(list_games) == 0:
                 list_games = None
 
+            # Preguntamos si han dado al boton de crear los partidos 
+            if request.POST.get("create") == "create" and t.round < t.rounds:
+                # Creamos los partidos
+                createMatchs(t, players)
+                # Actualizamos la lista de los partidos
+                list_games = Game.objects.filter(tournament = t, round = t.round)
+            
             # Cuando el administrador envie el resultado final
             if request.POST.get("final_result") == "result" :
                 game = Game.objects.get(id = request.POST["game_id"])
                 if game.status == 0:
                     sendResult(request, t, game)
+                    list_games = Game.objects.filter(tournament = t, round = t.round)
 
             # Aqui llamamos a la funcion cuando se cumpla las condiciones indicadas
             if t.round >= t.rounds and request.POST.get("final") == "final":
@@ -166,7 +160,7 @@ def playMatch(request):
                 else:
                     extraRound(t, players)
 
-
+            # Renderizamos todos los datos necesitamos
             return render(request, "tournament.html", {
                 "tournament": t,
                 "list_players": players,
@@ -209,6 +203,37 @@ def playMatch(request):
                     "status": 0
                 })
             
+# Función para actualizar el estado de un torneo que recien a empezado
+def startTournament(t):
+    # Cambiamos el estado del torneo
+    t.status = 1
+    t.save()
+                
+    # Obtenemos los jugadores que participan en el torneo
+    list_players = Players.objects.filter(tournament = t.id)
+
+    # Los guardamos en una tabla temporal
+    for player in list_players:
+        pt = PlayersTournament.objects.create(tournament = t, player = player)
+        pt.save()
+
+# Pagina que crea los partidos de manera "aleatoria"
+def createMatchs(t, list_players):
+    # Obtenemos el torneo y la lista de jugadores
+    list_games = Game.objects.filter(tournament = t)
+
+    if len(list_games) != 0:
+        t.round += 1
+        t.save()
+    else:
+        t.round = 1
+        t.save()
+    
+    # Creamos los partidos
+    for i in range(0,len(list_players),2):
+        game = Game.objects.create(tournament = t, round = t.round, player1 = list_players[i].player, player2 = list_players[i+1].player, winner = Players.objects.get(username = "no_winner"))
+        game.save()
+
 # Funcion que nos permite enviar los resultados de los partidos
 def sendResult(request, t, game):
     # Recogemos los datos de los jugadores del formulario
@@ -249,6 +274,16 @@ def sendResult(request, t, game):
     player1.save()
     player2.save()
 
+# Función en el caso de empate en el primer puesto
+def extraRound(t,list_players):
+    # Actualizamos el torneo con una ronda mas
+    t.round += 1
+    t.save()
+
+    # Creamos el partido del desempate
+    game = Game.objects.create(tournament = t, round = t.round, player1 = list_players[0].player, player2 = list_players[1].player, winner = Players.objects.get(username = "no_winner"))
+    game.save()
+
 # Funcion para indicar quien es ganador del torneo y finalizar el torneo
 def winnerTournament(t, list_players):
     # Indicamos quien es jugador ganador del torneo y actualizamos el estado del torneo
@@ -274,34 +309,6 @@ def winnerTournament(t, list_players):
         player.tournament = 0
         player.save()
         auxplayer.delete()
-
-# Función en el caso de empate en el primer puesto
-def extraRound(t,list_players):
-    # Actualizamos el torneo con una ronda mas
-    t.round += 1
-    t.save()
-
-    # Creamos el partido del desempate
-    game = Game.objects.create(tournament = t, round = t.round, player1 = list_players[0].player, player2 = list_players[1].player, winner = Players.objects.get(username = "no_winner"))
-    game.save()
-
-# Pagina que crea los partidos de manera "aleatoria"
-def createMatchs(request, list_players):
-    # Obtenemos el torneo y la lista de jugadores
-    t = Tournament.objects.get(id = request.POST["tournament_id"])
-    list_games = Game.objects.filter(tournament = t)
-
-    if len(list_games) != 0:
-        t.round += 1
-        t.save()
-    else:
-        t.round = 1
-        t.save()
-    
-    # Creamos los partidos
-    for i in range(0,len(list_players),2):
-        game = Game.objects.create(tournament = t, round = t.round, player1 = list_players[i].player, player2 = list_players[i+1].player, winner = Players.objects.get(username = "no_winner"))
-        game.save()
     
 # Pagina en la cual los jugadores envian los resultados de los partidos
 @login_required
