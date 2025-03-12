@@ -1,0 +1,1 @@
+Este es un archivo de prueba para confirmar que la configuracion de git funciona correctamnete
