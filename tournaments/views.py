@@ -20,7 +20,7 @@ def tournaments(request):
         })
     else:
         player = Players.objects.get(username=request.user.username)
-        tournaments = Tournament.objects.filter(min_level__lte=player.level,status = 0)
+        tournaments = Tournament.objects.filter(min_level = player.level, status = 0)
 
         return render(request, 'list_tournament.html', {
             'tournaments': tournaments,

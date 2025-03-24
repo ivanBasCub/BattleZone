@@ -26,6 +26,8 @@
                             <p class="card-text">Game: {{tournament.game.name}}</p>
                             <p class="card-text">Starts: {{tournament.date}}</p>
                             <p class="card-text">Players: {{tournament.players}}/{{tournament.max_players}}</p>
+                            {% if user.is_staff %}
+                            {% else %}
                             <div class="row justify-content-between">
                                 <form class="col-5" action="/join_tournament/" method="post">
                                     {% csrf_token %}
@@ -48,6 +50,7 @@
                                     </form>
                                 {% endif %}
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
